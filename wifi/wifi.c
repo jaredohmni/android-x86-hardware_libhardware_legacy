@@ -396,11 +396,11 @@ int wifi_unload_driver()
     usleep(200000); /* allow to finish interface down */
 #ifdef WIFI_DRIVER_MODULE_PATH
     char modname[PROPERTY_VALUE_MAX];
-    if (!property_get(DRIVER_NAME_PROP, modname, NULL))
-        return -1;
     if (property_get("wlan.no-unload-driver", modname, NULL)
             && strcmp(modname, "1") == 0)
         return 0;
+    if (!property_get(DRIVER_NAME_PROP, modname, NULL))
+        return -1;
 
     if (rmmod(modname) == 0) {
         int count = 20; /* wait at most 10 seconds for completion */
