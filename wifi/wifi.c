@@ -271,7 +271,7 @@ static int get_driver_info(char *buf) {
             /* filter to matching only if wifi.interface is set */
             if (sellen > 0) {
                 if (strcmp(selname, de->d_name) != 0) {
-                    ALOGI("wifi.interface set to %s, ignoring interface %d", selname, de->d_name);
+                    ALOGI("wifi.interface set to %s, ignoring interface %s", selname, de->d_name);
                     continue;
                 }
             }
