@@ -250,7 +250,11 @@ static int get_driver_info(char *buf) {
     struct dirent *de;
     char path[SYSFS_PATH_MAX];
     char link[SYSFS_PATH_MAX];
+    char selname[PROPERTY_VALUE_MAX];
     int ret = 0;
+    int sellen = 0;
+
+    sellen = property_get("wifi.interface", selname, NULL);
 
     if ((netdir = opendir(SYSFS_CLASS_NET))) {
         while ((de = readdir(netdir))) {
@@ -264,8 +268,16 @@ static int get_driver_info(char *buf) {
                 if (access(path, F_OK))
                     continue;
             }
+            /* filter to matching only if wifi.interface is set */
+            if (sellen > 0) {
+                if (strcmp(selname, de->d_name) != 0) {
+                    ALOGI("wifi.interface set to %s, ignoring interface %d", selname, de->d_name);
+                    continue;
+                }
+            }
             /* found the wifi interface */
-            property_set("wlan.interface", de->d_name);
+            ALOGI("setting wlan.interface to %s", de->d_name);
+            property_set("wlan.interface", de->d_name); 
             snprintf(path, SYSFS_PATH_MAX, "%s/%s/%s", SYSFS_CLASS_NET, de->d_name, SYS_MOD_NAME_DIR);
             if ((cnt = readlink(path, link, SYSFS_PATH_MAX - 1)) < 0) {
                 ALOGW("can not find link of %s", path);
